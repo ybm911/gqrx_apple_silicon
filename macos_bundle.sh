@@ -1,9 +1,25 @@
 #!/bin/bash -e
 
-GQRX_VERSION=$(<build/version.txt)
+
+if [ ! -e gqrx ]; then
+	git clone https://github.com/gqrx-sdr/gqrx.git
+fi
+
+cd gqrx
+
+(
+	rm -rf build
+	mkdir -p build
+	cd build
+	cmake ..
+	make -j${CPU_COUNT}
+)
+
+GQRX_VERSION="$(<build/version.txt)"
 BREW_PREFIX="$(brew --prefix)"
 IDENTITY=Y3GC27WZ4S
 
+rm -rf Gqrx.app
 mkdir -p Gqrx.app/Contents/MacOS
 mkdir -p Gqrx.app/Contents/Resources
 mkdir -p Gqrx.app/Contents/soapy-modules
@@ -50,23 +66,40 @@ EOM
 </plist>
 EOM
 
-cp build/src/gqrx Gqrx.app/Contents/MacOS
-cp resources/icons/gqrx.icns Gqrx.app/Contents/Resources
-cp ${BREW_PREFIX}/lib/SoapySDR/modules*/libPlutoSDRSupport.so Gqrx.app/Contents/soapy-modules
-cp ${BREW_PREFIX}/lib/SoapySDR/modules*/libremoteSupport.so Gqrx.app/Contents/soapy-modules
+cp -p build/src/gqrx Gqrx.app/Contents/MacOS
+cp -p resources/icons/gqrx.icns Gqrx.app/Contents/Resources
+cp -p "${BREW_PREFIX}"/lib/SoapySDR/modules*/libPlutoSDRSupport.so Gqrx.app/Contents/soapy-modules
+cp -p "${BREW_PREFIX}"/lib/SoapySDR/modules*/libremoteSupport.so Gqrx.app/Contents/soapy-modules
 chmod 644 Gqrx.app/Contents/soapy-modules/*
 
-dylibbundler -s ${BREW_PREFIX}/opt/icu4c/lib/ -od -b -x Gqrx.app/Contents/MacOS/gqrx -x Gqrx.app/Contents/soapy-modules/libPlutoSDRSupport.so -x Gqrx.app/Contents/soapy-modules/libremoteSupport.so -d Gqrx.app/Contents/libs/
+dylibbundler \
+	-s "${BREW_PREFIX}/opt/icu4c/lib/" \
+	-od -b \
+	-x Gqrx.app/Contents/MacOS/gqrx \
+	-x Gqrx.app/Contents/soapy-modules/libPlutoSDRSupport.so \
+	-x Gqrx.app/Contents/soapy-modules/libremoteSupport.so \
+	-d Gqrx.app/Contents/libs/
+
 macdeployqt Gqrx.app -no-strip -always-overwrite # TODO: Remove macdeployqt workaround
 if [ "$1" = "true" ]; then
     macdeployqt Gqrx.app -no-strip -always-overwrite -sign-for-notarization=$IDENTITY
 else
     macdeployqt Gqrx.app -no-strip -always-overwrite
 fi
-cp ${BREW_PREFIX}/lib/libbrotlicommon.1.dylib Gqrx.app/Contents/Frameworks # TODO: Remove macdeployqt workaround
-install_name_tool -change @loader_path/../../../../opt/libpng/lib/libpng16.16.dylib @executable_path/../Frameworks/libpng16.16.dylib Gqrx.app/Contents/Frameworks/libfreetype.6.dylib
+cp -p "${BREW_PREFIX}/lib/libbrotlicommon.1.dylib" Gqrx.app/Contents/Frameworks # TODO: Remove macdeployqt workaround
 
-for f in Gqrx.app/Contents/libs/*.dylib Gqrx.app/Contents/soapy-modules/*.so Gqrx.app/Contents/Frameworks/*.framework Gqrx.app/Contents/Frameworks/libbrotlicommon.1.dylib Gqrx.app/Contents/Frameworks/libsharpyuv.0.dylib Gqrx.app/Contents/Frameworks/libfreetype.6.dylib Gqrx.app/Contents/MacOS/gqrx
+
+#install_name_tool -change @loader_path/../../../../opt/libpng/lib/libpng16.16.dylib @executable_path/../Frameworks/libpng16.16.dylib Gqrx.app/Contents/Frameworks/libfreetype.6.dylib
+
+
+find Gqrx.app -name '*.framework' -or -name '*.dylib' -or -name '*.so' -or -name gqrx | {
+	while read -r f; do
+		codesign --sign - --force --preserve-metadata=entitlements,requirements,flags,runtime "${f}"
+	done
+}
+
+codesign --sign - --force --preserve-metadata=entitlements,requirements,flags,runtime Gqrx.app
+
 do
     if [ "$1" = "true" ]; then
         codesign --force --verify --verbose --timestamp --options runtime --entitlements /tmp/Entitlements.plist --sign $IDENTITY $f
