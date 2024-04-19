@@ -51,7 +51,7 @@ jobs:
           cd SoapyPlutoSDR
           mkdir build
           cd build
-          cmake ..
+          cmake -DCMAKE_INSTALL_PREFIX="${BREW_PREFIX}" ..
           make -j${CPU_COUNT}
           sudo make install
 
@@ -60,7 +60,7 @@ jobs:
           cd SoapyRemote
           mkdir build
           cd build
-          cmake ..
+          cmake -DCMAKE_INSTALL_PREFIX="${BREW_PREFIX}" ..
           make -j${CPU_COUNT}
           sudo make install
 
@@ -80,7 +80,7 @@ jobs:
           git submodule update --init --recursive
           mkdir build
           cd build
-          cmake ..
+          cmake -DCMAKE_INSTALL_PREFIX="${BREW_PREFIX}" ..
           make -j${CPU_COUNT}
           sudo make install
 
