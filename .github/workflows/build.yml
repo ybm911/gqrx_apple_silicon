@@ -89,7 +89,7 @@ jobs:
           cd gr-osmosdr
           mkdir build
           cd build
-          cmake -DCMAKE_CXX_FLAGS=-Wno-register ..
+          cmake -DCMAKE_CXX_FLAGS=-Wno-register -DCMAKE_INSTALL_PREFIX="${BREW_PREFIX}" ..
           LIBRARY_PATH=${BREW_PREFIX}/opt/icu4c/lib make -j${CPU_COUNT}
           sudo make install
       - name: Install Apple certificate
