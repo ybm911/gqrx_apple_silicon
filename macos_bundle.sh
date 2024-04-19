@@ -100,6 +100,7 @@ find Gqrx.app -name '*.framework' -or -name '*.dylib' -or -name '*.so' -or -name
 
 codesign --sign - --force --preserve-metadata=entitlements,requirements,flags,runtime Gqrx.app
 
+for f in Gqrx.app/Contents/libs/*.dylib Gqrx.app/Contents/soapy-modules/*.so Gqrx.app/Contents/Frameworks/*.framework Gqrx.app/Contents/Frameworks/libbrotlicommon.1.dylib Gqrx.app/Contents/Frameworks/libsharpyuv.0.dylib Gqrx.app/Contents/Frameworks/libfreetype.6.dylib Gqrx.app/Contents/MacOS/gqrx
 do
     if [ "$1" = "true" ]; then
         codesign --force --verify --verbose --timestamp --options runtime --entitlements /tmp/Entitlements.plist --sign $IDENTITY $f
