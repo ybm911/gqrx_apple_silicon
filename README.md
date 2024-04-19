@@ -1,4 +1,4 @@
-Gqrx
+Gqrx for Apple Silicon
 ====
 
 [![CI](https://github.com/gqrx-sdr/gqrx/workflows/CI/badge.svg)](https://github.com/gqrx-sdr/gqrx/actions?query=workflow%3ACI+branch%3Amaster)
@@ -15,6 +15,10 @@ instrument. There are also various hooks for interacting with external
 applications using network sockets.
 
 ![Screenshot of the main Gqrx window](resources/screenshots/gqrx-main.png)
+
+Only for M1, M2, M3
+--------
+The original project of gqrx does not provide binary downloads for apple silicon. So this project is specially designed to use github action for compilation. Enjoy yourself
 
 
 Download
