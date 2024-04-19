@@ -136,7 +136,7 @@ jobs:
       - name: Create DMG
         run: |
           GQRX_VERSION=$(<build/version.txt)
-          hdiutil create Gqrx.dmg -srcfolder Gqrx.app -format UDZO -fs HFS+ -volname "Gqrx $GQRX_VERSION"
+          hdiutil create Gqrx.dmg -srcfolder Gqrx.app -format UDZO -fs HFS+ -volname Gqrx
       - name: Notarize DMG
         if: ${{ steps.secret-check.outputs.available == 'true' }}
         env:
