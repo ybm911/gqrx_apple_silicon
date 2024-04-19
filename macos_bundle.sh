@@ -56,11 +56,11 @@ cp /usr/local/lib/SoapySDR/modules*/libremoteSupport.so Gqrx.app/Contents/soapy-
 chmod 644 Gqrx.app/Contents/soapy-modules/*
 
 dylibbundler -s /usr/local/opt/icu4c/lib/ -od -b -x Gqrx.app/Contents/MacOS/gqrx -x Gqrx.app/Contents/soapy-modules/libPlutoSDRSupport.so -x Gqrx.app/Contents/soapy-modules/libremoteSupport.so -d Gqrx.app/Contents/libs/
-/usr/local/opt/qt@6/bin/macdeployqt Gqrx.app -no-strip -always-overwrite # TODO: Remove macdeployqt workaround
+macdeployqt Gqrx.app -no-strip -always-overwrite # TODO: Remove macdeployqt workaround
 if [ "$1" = "true" ]; then
-    /usr/local/opt/qt@6/bin/macdeployqt Gqrx.app -no-strip -always-overwrite -sign-for-notarization=$IDENTITY
+    macdeployqt Gqrx.app -no-strip -always-overwrite -sign-for-notarization=$IDENTITY
 else
-    /usr/local/opt/qt@6/bin/macdeployqt Gqrx.app -no-strip -always-overwrite
+    macdeployqt Gqrx.app -no-strip -always-overwrite
 fi
 cp /usr/local/lib/libbrotlicommon.1.dylib Gqrx.app/Contents/Frameworks # TODO: Remove macdeployqt workaround
 install_name_tool -change @loader_path/../../../../opt/libpng/lib/libpng16.16.dylib @executable_path/../Frameworks/libpng16.16.dylib Gqrx.app/Contents/Frameworks/libfreetype.6.dylib
