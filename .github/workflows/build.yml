@@ -4,71 +4,9 @@ on:
   workflow_dispatch:
 
 jobs:
-  appimage:
-    name: AppImage
-    runs-on: ubuntu-latest
-    steps:
-      - name: Install base dependencies
-        run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y --no-install-recommends \
-            libopengl0 \
-            libegl1
-
-      - name: Install conda dependencies
-        id: setup-micromamba
-        uses: mamba-org/setup-micromamba@v1
-        with:
-          environment-name: gqrx
-          create-args: >-
-            c-compiler
-            cxx-compiler
-            cmake
-            make
-            pkg-config
-            gnuradio-core
-            gnuradio-osmosdr
-            libboost-headers
-            mesa-libgl-devel-cos6-x86_64
-            pybind11
-            pulseaudio
-            qt6-gtk-platformtheme
-            qt6-main
-            soapysdr-module-lms7
-            soapysdr-module-plutosdr
-            soapysdr-module-remote
-            volk
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Configure
-        shell: bash -el {0}
-        run: |
-          git config --global --add safe.directory $GITHUB_WORKSPACE
-          mkdir build
-          cd build
-          cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX ..
-      - name: Compile
-        shell: bash -el {0}
-        working-directory: build
-        run: |
-          make -j4
-          make install
-      - name: Build AppImage
-        shell: bash -el {0}
-        env:
-          APPIMAGE_EXTRACT_AND_RUN: "1"
-          PREFIX: ${{ steps.setup-micromamba.outputs.environment-path }}
-        run: ./appimage.sh
-      - name: Save artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: gqrx-appimage-${{ github.run_id }}
-          path: Gqrx-*.AppImage
   macos:
     name: MacOS
-    runs-on: macos-14
+    runs-on: flyci-macos-14-m2
     steps:
       - name: Check for Secret availability
         id: secret-check
