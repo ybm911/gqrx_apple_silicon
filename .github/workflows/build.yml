@@ -66,13 +66,13 @@ jobs:
 
           cd /tmp
           sudo cp /Library/Frameworks/iio.framework/iio ${BREW_PREFIX}/lib/libiio.dylib
-          install_name_tool -id "${BREW_PREFIX}/lib/libiio.dylib" ${BREW_PREFIX}/lib/libiio.dylib
+          sudo install_name_tool -id "${BREW_PREFIX}/lib/libiio.dylib" ${BREW_PREFIX}/lib/libiio.dylib
           sudo cp /Library/Frameworks/ad9361.framework/ad9361 ${BREW_PREFIX}/lib/libad9361.dylib
-          install_name_tool -id "${BREW_PREFIX}/lib/libad9361.dylib" ${BREW_PREFIX}/lib/libad9361.dylib
-          install_name_tool -delete_rpath /Library/Frameworks ${BREW_PREFIX}/lib/libad9361.dylib
-          install_name_tool -change @rpath/iio.framework/Versions/0.23/iio ${BREW_PREFIX}/lib/libiio.dylib ${BREW_PREFIX}/lib/libad9361.dylib
-          install_name_tool -change @rpath/iio.framework/Versions/0.23/iio ${BREW_PREFIX}/lib/libiio.dylib ${BREW_PREFIX}/lib/SoapySDR/modules0.*/libPlutoSDRSupport.so
-          install_name_tool -change @rpath/ad9361.framework/Versions/0.2/ad9361 ${BREW_PREFIX}/lib/libad9361.dylib ${BREW_PREFIX}/lib/SoapySDR/modules0.*/libPlutoSDRSupport.so
+          sudo install_name_tool -id "${BREW_PREFIX}/lib/libad9361.dylib" ${BREW_PREFIX}/lib/libad9361.dylib
+          sudo install_name_tool -delete_rpath /Library/Frameworks ${BREW_PREFIX}/lib/libad9361.dylib
+          sudo install_name_tool -change @rpath/iio.framework/Versions/0.23/iio ${BREW_PREFIX}/lib/libiio.dylib ${BREW_PREFIX}/lib/libad9361.dylib
+          sudo install_name_tool -change @rpath/iio.framework/Versions/0.23/iio ${BREW_PREFIX}/lib/libiio.dylib ${BREW_PREFIX}/lib/SoapySDR/modules0.*/libPlutoSDRSupport.so
+          sudo install_name_tool -change @rpath/ad9361.framework/Versions/0.2/ad9361 ${BREW_PREFIX}/lib/libad9361.dylib ${BREW_PREFIX}/lib/SoapySDR/modules0.*/libPlutoSDRSupport.so
 
           cd /tmp
           git clone https://gitea.osmocom.org/sdr/gr-iqbal.git
